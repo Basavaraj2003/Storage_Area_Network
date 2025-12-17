@@ -1,218 +1,226 @@
-# SAN I/O Workload Monitoring System
+# SAN I/O Workload Monitor
 
-A real-time I/O workload monitoring tool for Windows-based SAN (Storage Area Network) environments. This system observes actual read/write operations on SAN-mounted storage, analyzes workload characteristics using time-window-based access counts, and identifies abnormal or bursty I/O behavior.
+A real-time Storage Area Network (SAN) I/O monitoring application that tracks file system operations and provides comprehensive analytics for storage performance optimization.
 
 ## Features
 
-- **Real-time Monitoring**: Monitors actual file system events on SAN-mounted volumes (iSCSI, Fibre Channel, SMB-backed)
-- **Time-Window Analysis**: Groups I/O events into configurable time windows (default: 1 second) for workload characterization
-- **Burst Detection**: Automatically detects sudden spikes in read/write operations using configurable thresholds
-- **High-Load Identification**: Marks files and directories as high-load when I/O activity exceeds defined thresholds
-- **REST API**: Comprehensive API endpoints for accessing workload data
-- **WebSocket Support**: Real-time updates via WebSocket for live dashboard updates
-- **Modern Dashboard**: Beautiful, responsive React-based frontend with real-time visualizations
+### 🔐 Authentication System
+- User registration and login
+- JWT-based authentication
+- Secure session management
+- Database-stored user credentials
 
-## Architecture
+### 📊 Real-time Monitoring
+- Live file system event tracking
+- WebSocket-based real-time updates
+- Operation categorization (Read, Write, Create, Delete, Modify)
+- Path-specific monitoring with configurable SAN paths
+
+### 📈 Analytics Dashboard
+- Interactive operation metrics cards
+- Time-filtered event analysis
+- Historical data visualization
+- High-load path detection
+- Burst activity monitoring
+
+### 💾 Data Persistence
+- SQLite database for event storage
+- Historical event retrieval
+- Configurable data retention
+- Bulk cleanup operations (24 hours, 10 days, all events)
+
+### ⚙️ Configuration Management
+- Configurable SAN paths monitoring
+- Adjustable performance thresholds
+- Time window customization
+- Settings management interface
+
+## Technology Stack
 
 ### Backend
-- **Python FastAPI**: RESTful API server
-- **Watchdog**: Real-time file system event monitoring
-- **Time-Window Aggregation**: Groups events into fixed time windows for analysis
-- **Burst Detection Algorithm**: Identifies abnormal I/O patterns
+- **Python 3.8+**
+- **FastAPI** - Modern web framework
+- **SQLite** - Database for event storage
+- **Watchdog** - File system monitoring
+- **WebSockets** - Real-time communication
+- **JWT** - Authentication tokens
 
 ### Frontend
-- **React**: Modern UI framework
-- **Recharts**: Data visualization
-- **WebSocket**: Real-time data streaming
-- **Tailwind-inspired CSS**: Modern, responsive design
+- **React 18** - User interface
+- **JavaScript ES6+** - Frontend logic
+- **CSS3** - Styling and animations
+- **WebSocket Client** - Real-time updates
+- **Axios** - HTTP client
 
-## Quick Start
+## Installation
 
-### 1. Verify Setup
-```bash
-python verify_setup.py
-```
+### Prerequisites
+- Python 3.8 or higher
+- Node.js 14 or higher
+- npm or yarn package manager
 
-### 2. Install Dependencies
+### Backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
 
-**Backend:**
-```bash
-pip install -r requirements.txt
-```
+2. Install Python dependencies:
+   ```bash
+   pip install -r ../requirements.txt
+   ```
 
-**Frontend:**
-```bash
-cd frontend
-npm install
-cd ..
-```
+3. Initialize the database:
+   ```bash
+   python init_db.py
+   ```
 
-### 3. Configure SAN Path
+4. Configure SAN paths in `config.json`:
+   ```json
+   {
+     "san_paths": ["Z:\\", "C:\\YourSANPath"],
+     "time_window_seconds": 10,
+     "thresholds": {
+       "read_frequency_threshold": 100,
+       "write_frequency_threshold": 100,
+       "modification_rate_threshold": 50
+     }
+   }
+   ```
 
-Edit `config.json` (created automatically on first run):
-```json
-{
-  "san_paths": ["Z:\\"],
-  "time_window_seconds": 1,
-  "thresholds": {
-    "read_frequency_threshold": 100,
-    "write_frequency_threshold": 100,
-    "modification_rate_threshold": 50,
-    "burst_intensity_multiplier": 3.0,
-    "burst_time_window_seconds": 5
-  }
-}
-```
+5. Start the backend server:
+   ```bash
+   python main.py
+   ```
 
-### 4. Start the System
+### Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
 
-**Terminal 1 - Backend:**
-```bash
-cd backend
-python main.py
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-**Terminal 2 - Frontend:**
-```bash
-cd frontend
-npm start
-```
+3. Start the development server:
+   ```bash
+   npm start
+   ```
 
-**Terminal 3 - Generate Real Workload:**
-```bash
-python workload_generator.py Z:\SAN_TEST 10 3
-```
+## Usage
 
-## Real Workload Generation
+### Initial Setup
+1. Open your browser and navigate to `http://localhost:3000`
+2. Register a new user account or login with existing credentials
+3. Configure your SAN paths in the Settings tab
+4. Start monitoring your storage operations
 
-The `workload_generator.py` script performs **REAL** file operations on your SAN storage:
+### Monitoring Operations
+- **Dashboard View**: Overview of all operation types with clickable cards
+- **Operation Details**: Click any operation card to view detailed events
+- **Time Filtering**: Apply time ranges to analyze specific periods
+- **Real-time Updates**: Watch live file system events as they occur
 
-- ✅ Creates actual files with random content
-- ✅ Modifies files repeatedly (append + overwrite)
-- ✅ Renames files (triggers move events)
-- ✅ Deletes files
-- ✅ Recreates deleted files
-- ✅ Creates subdirectories
-- ✅ Performs rapid operations to trigger burst detection
+### Data Management
+- **Event History**: View historical events stored in the database
+- **Cleanup Options**: Remove old events (24 hours, 10 days, or all)
+- **Export Capabilities**: Access event data via REST API endpoints
 
-**All operations are REAL** - no simulation, no mock data. Every file operation generates actual I/O events that are detected by the monitoring system.
+## API Endpoints
+
+### Authentication
+- `POST /api/register` - User registration
+- `POST /api/login` - User login
+
+### Events
+- `GET /api/events` - Retrieve events with optional filtering
+- `GET /api/events/stats` - Get operation statistics
+- `DELETE /api/events/cleanup` - Bulk delete old events
+
+### Monitoring
+- `GET /api/workload` - Current workload statistics
+- `WebSocket /ws` - Real-time event stream
 
 ## Configuration
 
 ### SAN Paths
-Add your SAN-mounted drive paths to the `san_paths` array in `config.json`. The system will monitor all subdirectories recursively.
-
-### Time Windows
-Adjust `time_window_seconds` to change the granularity of I/O analysis. Default is 1 second.
-
-### Thresholds
-- **read_frequency_threshold**: Number of reads per window to mark as high-load
-- **write_frequency_threshold**: Number of writes per window to mark as high-load
-- **modification_rate_threshold**: Number of modifications per window to mark as high-load
-- **burst_intensity_multiplier**: Multiplier above average activity to detect bursts (default: 3.0x)
-- **burst_time_window_seconds**: Time window for burst detection analysis
-
-## API Endpoints
-
-### GET `/api/workload`
-Get current I/O workload statistics
-
-### GET `/api/workload/history?limit=100`
-Get historical workload data
-
-### GET `/api/path/{path}`
-Get detailed statistics for a specific path
-
-### GET `/api/paths/high-load`
-Get all paths currently marked as high-load or burst
-
-### GET `/api/config`
-Get current configuration
-
-### POST `/api/config/san-path?path=Z:\\`
-Add a SAN path to monitor
-
-### DELETE `/api/config/san-path?path=Z:\\`
-Remove a SAN path from monitoring
-
-### GET `/api/stats/summary`
-Get summary statistics
-
-## WebSocket
-
-Connect to `ws://localhost:8000/ws` for real-time workload updates. The server broadcasts workload data every 500ms.
-
-## Dashboard Features
-
-- **Overview Tab**: Real-time metrics for reads, writes, modifications, and total events
-- **Activity Chart**: Visual timeline of I/O operations across time windows
-- **High-Load Paths**: List of paths exceeding thresholds with detailed statistics
-- **Time Windows**: Tabular view of all time windows with activity breakdown
-
-## Monitoring Real SAN Storage
-
-This system is designed to monitor actual SAN-mounted storage volumes. To ensure you're monitoring SAN storage:
-
-1. **iSCSI Volumes**: Mount your iSCSI targets and add the mount point to `san_paths`
-2. **Fibre Channel**: Add FC-mounted drive paths to `san_paths`
-3. **SMB/CIFS**: Add network share paths that are backed by SAN storage
-4. **Volume Detection**: The system attempts to detect SAN volumes automatically, but explicit configuration is recommended
-
-## Performance Considerations
-
-- The system maintains a rolling history of the last 1000 time windows
-- Path statistics are kept in memory for fast access
-- WebSocket updates are throttled to 500ms intervals
-- File system events are processed asynchronously to minimize overhead
-
-## Troubleshooting
-
-### No Events Detected
-- Verify SAN paths exist and are accessible
-- Check that files are actually being accessed on the monitored paths
-- Ensure the paths are on SAN-mounted volumes, not local drives
-- Run `python verify_setup.py` to check configuration
-
-### High CPU Usage
-- Increase `time_window_seconds` to reduce event processing frequency
-- Reduce the number of monitored paths
-- Check for excessive file system activity
-
-### WebSocket Connection Issues
-- Verify backend is running on port 8000
-- Check firewall settings
-- Ensure CORS is properly configured
-
-## Files Structure
-
-```
-sanfinal/
-├── backend/
-│   ├── main.py          # FastAPI application
-│   ├── monitor.py       # I/O monitoring core
-│   ├── api.py           # REST API endpoints
-│   └── config.py        # Configuration management
-├── frontend/
-│   ├── src/
-│   │   ├── App.js       # Main React app
-│   │   ├── components/  # Dashboard components
-│   │   └── services/    # WebSocket service
-│   └── package.json
-├── workload_generator.py # Real file operations generator
-├── verify_setup.py      # Setup verification script
-├── requirements.txt     # Python dependencies
-├── config.json         # Configuration (auto-created)
-└── README.md
+Configure the paths to monitor in `backend/config.json`:
+```json
+{
+  "san_paths": ["Z:\\", "\\\\server\\share"],
+  "enable_san_volume_detection": true
+}
 ```
 
-## Important Notes
+### Performance Thresholds
+Adjust monitoring sensitivity:
+```json
+{
+  "thresholds": {
+    "read_frequency_threshold": 100,
+    "write_frequency_threshold": 100,
+    "modification_rate_threshold": 50,
+    "burst_intensity_multiplier": 3.0
+  }
+}
+```
 
-- **Real-time Monitoring**: All I/O events are captured from actual file system operations, not simulated data
-- **SAN-Specific**: The system is configured to monitor only SAN-mounted storage volumes
-- **Time-Window Analysis**: Based on research techniques for SAN workload characterization
-- **Burst Detection**: Uses statistical analysis to identify abnormal I/O patterns
-- **No Mock Data**: The workload generator creates real files - ensure you have sufficient storage space
+## Development
+
+### Testing
+Run backend tests:
+```bash
+cd backend
+python debug_events.py
+python test_events.py
+```
+
+### Database Schema
+The application uses SQLite with the following main tables:
+- `users` - User authentication data
+- `events` - File system events with timestamps and metadata
+
+## Limitations
+
+### File System Monitoring
+- **Read Operations**: Cannot be directly detected by file system watchers (this is a limitation of the underlying OS APIs)
+- **Network Latency**: Remote SAN monitoring may have slight delays
+- **Permission Requirements**: Requires appropriate file system permissions
+
+### SAN-Specific Features
+This application provides file-level monitoring rather than true SAN block-level monitoring. For enterprise SAN environments, consider integrating with:
+- Storage array management APIs
+- SNMP monitoring for SAN switches
+- Fibre Channel HBA monitoring tools
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## License
 
-This project is provided as-is for SAN workload monitoring and analysis.
+This project is open source and available under the MIT License.
+
+## Support
+
+For issues and questions:
+1. Check the GitHub Issues page
+2. Review the configuration documentation
+3. Ensure proper file system permissions
+4. Verify SAN path accessibility
+
+## Future Enhancements
+
+- [ ] Integration with enterprise storage APIs
+- [ ] Advanced analytics and reporting
+- [ ] Email/SMS alerting for high-load conditions
+- [ ] Multi-user role management
+- [ ] Export to CSV/Excel functionality
+- [ ] Docker containerization
+- [ ] Kubernetes deployment support
