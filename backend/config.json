@@ -1,0 +1,12 @@
+{
+  "san_paths": ["Z:\\"],
+  "time_window_seconds": 10,
+  "thresholds": {
+    "read_frequency_threshold": 100,
+    "write_frequency_threshold": 100,
+    "modification_rate_threshold": 50,
+    "burst_intensity_multiplier": 3.0,
+    "burst_time_window_seconds": 5
+  },
+  "enable_san_volume_detection": true
+}

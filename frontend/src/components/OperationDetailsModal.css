@@ -1,0 +1,12 @@
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2000}
+.modal-content{background:linear-gradient(180deg,#0f1724,#0b1220);border-radius:8px;width:90%;max-width:900px;box-shadow:0 8px 30px rgba(2,6,23,0.7);overflow:hidden}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.modal-body{padding:16px 20px;max-height:60vh;overflow:auto}
+.log-item{padding:12px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column}
+.log-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.operation-badge{padding:6px 10px;border-radius:6px;font-weight:600}
+.log-path{font-size:0.95rem;color:#cbd5e1;margin-bottom:6px}
+.log-meta{display:flex;gap:12px;align-items:center}
+.log-correct{margin-left:auto;padding:6px 8px;border-radius:6px;background:#2b6cb0;color:white;border:none;cursor:pointer}
+.no-logs{padding:20px;text-align:center;color:#94a3b8}
+.loading{padding:20px;text-align:center;color:#94a3b8}
